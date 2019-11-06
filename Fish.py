@@ -21,9 +21,9 @@ dataset = dataset[0:len(dataset)-1]
 # x0 = [6.9,3.1,4.9,1.5]
 x0 = [6.5,3.0,5.2,2.0]   #输入待判别特征
 
-X1 = np.array(dataset[0:30]).astype(float)   #0
-X2 = np.array(dataset[0+50:30+50]).astype(float)  #1
-X3 = np.array(dataset[0+100:30+100]).astype(float)   #分割数据 每类前30个   #2
+X1 = np.array(dataset[0:30]).astype(float)   #1
+X2 = np.array(dataset[0+50:30+50]).astype(float)  #2
+X3 = np.array(dataset[0+100:30+100]).astype(float)   #分割数据 每类前30个   #3
 
 S1 = np.cov(X1.transpose())
 S2 = np.cov(X2.transpose())
