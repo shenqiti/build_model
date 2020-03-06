@@ -1,3 +1,5 @@
+# By:shenqiti
+# 2020/3/6
 # import pandas as pd
 # import numpy as np
 #
@@ -289,47 +291,6 @@ import statsmodels.tsa.stattools as ts
 
 
 #####################################################################################
-# # KRR
-#
-# import pandas as pd
-# import numpy as np
-# from statsmodels.tsa.arima_model import ARIMA
-# import math
-# import matplotlib.pyplot as plt
-#
-#
-#
-# oil_price_path = 'D:/python_code/NEW_step/try_paper/mycode/PAPER/wti/train.xlsx'
-# data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
-# price = data["Price"]
-# cnt = len(price)-50
-# error1 = []
-# error2 = []
-# pre = []
-# pre2 = []
-#
-# for t in range(0,len(price)-50):
-#     train = price[t:50+t]
-#     test_y = price[50+t]
-#     model = ARIMA(train, order=(0,1,1))
-#     model_fit = model.fit(disp=0)
-#     y_kr = model_fit.forecast()[0]
-#     print(y_kr)
-#     print(price[50+t])
-#     error1.append(abs(test_y-y_kr))
-#     error2.append(pow((test_y-y_kr),2))
-#     pre.append(y_kr)
-#     pre2.append(test_y)
-# plt.plot(pre)
-# plt.plot(pre2)
-# plt.show()
-# MSE = sum(error2)/cnt
-# MAE = sum(error1)/cnt
-# MAPE = sum(error1/test_y)/cnt
-# SSE = sum(error2)
-# RMSE = math.sqrt(MSE)
-# print("训练数据点个数为:",len(train))
-# print("ARIMA的" + "MSE=", MSE, "MAE=", MAE, 'MAPE=', MAPE, 'SSE=', SSE, 'RMSE=', RMSE)
 
 # #
 # import pandas as pd
@@ -658,7 +619,7 @@ import statsmodels.tsa.stattools as ts
 # fn.close()
 
 ####################################################
-#预测H
+# 预测H
 
 # import pandas as pd
 # import numpy as np
@@ -671,15 +632,15 @@ import statsmodels.tsa.stattools as ts
 #
 # warnings.filterwarnings('ignore')
 #
-# INPUT_PATH = 'D:/python_code/NEW_step/try_paper/mycode/PAPER/train_n.xlsx'
-# OUT_PUT = 'D:/python_code/NEW_step/try_paper/mycode/PAPER/predict_n.csv'
+# INPUT_PATH = 'D:/python_code/NEW_step/try_paper/revision_data/result/H_WTI.xlsx'
+# OUT_PUT = 'D:/python_code/NEW_step/try_paper/revision_data/result/Brent/predict_H.csv'
 #
 # data = np.array(pd.read_excel(INPUT_PATH))
 #
 # W1 = []
 # W2 = []
 #
-# for length in range(50, 51):
+# for length in range(1786,1787):
 #     SUM = []
 #     SUM1 = []
 #     SUM2 = []
@@ -691,7 +652,7 @@ import statsmodels.tsa.stattools as ts
 #         y_test = data[length + i + 1]
 #
 #         svr = GridSearchCV(SVR(kernel='rbf', gamma=0.1), cv=2,
-#                            param_grid={"C": [1e0, 1e1, 1e2, 1e3],
+#                            param_grid={"C": [1e1],
 #                                        "gamma": np.logspace(-2, 2, 5)})
 #         svr.fit(x_train, y_train)
 #
@@ -712,28 +673,81 @@ import statsmodels.tsa.stattools as ts
 #########################33
 ## MSPE mean squared prediction error
 
-####
-# AR模型
-from pandas import Series
-from matplotlib import pyplot
+# # ####
+# # # AR模型
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.ar_model import AR
-from sklearn.metrics import mean_squared_error
-series = Series.from_csv('daily-minimum-temperatures.csv', header=0)
-# split dataset
-X = series.values
-train, test = X[1:len(X)-7], X[len(X)-7:]
-# train autoregression
-model = AR(train)
-model_fit = model.fit()
-print('Lag: %s' % model_fit.k_ar)
-print('Coefficients: %s' % model_fit.params)
-# make predictions
-predictions = model_fit.predict(start=len(train), end=len(train)+len(test)-1, dynamic=False)
-for i in range(len(predictions)):
-    print('predicted=%f, expected=%f' % (predictions[i], test[i]))
-error = mean_squared_error(test, predictions)
-print('Test MSE: %.3f' % error)
-# plot results
-pyplot.plot(test)
-pyplot.plot(predictions, color='red')
-pyplot.show()
+import math
+import matplotlib.pyplot as plt
+
+oil_price_path = 'D:/python_code/NEW_step/try_paper/revision_data/result/train.xlsx'
+out_put = 'D:/python_code/NEW_step/try_paper/revision_data/result/predict.csv'
+data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
+price = data["Price6"]
+
+predict = []
+test = []
+for t in range(0,len(price)-2016):
+    try:
+        train = price[t:2016+t]
+        test_y = price[2016+t]
+        model = AR(train)
+        model_fit = model.fit()
+        y_kr = list(model_fit.predict(start=len(train),end=len(train),dynamic=False))
+        print('Lag: %s' % model_fit.k_ar)
+        print(y_kr)
+        print(price[2016+t])
+        predict.append(y_kr)
+        test.append(price[2016+t])
+    except Exception as e:
+        print(e)
+fn = open(out_put,'w')
+
+for i in range(0,len(test)):
+    fn.write(str(predict[i][0]))
+    fn.write(',')
+    fn.write(str(test[i]))
+    fn.write('\n')
+fn.close()
+
+print('ok')
+##################
+# import pandas as pd
+# import numpy as np
+# from statsmodels.tsa.arima_model import ARIMA
+# from statsmodels.tsa.ar_model import AR
+# import math
+# import matplotlib.pyplot as plt
+#
+# oil_price_path = 'D:/python_code/NEW_step/try_paper/revision_data/result/train.xlsx'
+# out_put = 'D:/python_code/NEW_step/try_paper/revision_data/result/predict.csv'
+# data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
+# price = data["Price2"]
+#
+# predict = []
+# test = []
+# for t in range(0,len(price)-2041):
+#     try:
+#         train = price[t:2041+t]
+#         test_y = price[2041+t]
+#         model = ARIMA(train, order=(1,2,1))
+#         model_fit = model.fit(disp=0)
+#         y_kr = model_fit.forecast()[0]  ##ARIMA
+#         print(y_kr)
+#         print(price[2041+t])
+#         predict.append(y_kr)
+#         test.append(price[2041+t])
+#     except Exception as e:
+#         print(e)
+# fn = open(out_put,'w')
+#
+# for i in range(0,len(test)):
+#     fn.write(str(predict[i][0]))
+#     fn.write(',')
+#     fn.write(str(test[i]))
+#     fn.write('\n')
+# fn.close()
+#
+# print('ok')
