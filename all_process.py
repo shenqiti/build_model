@@ -1,5 +1,8 @@
-# By:shenqiti
-# 2020/3/6
+'''
+By:shenqiti
+2020/03/16
+'''
+
 # import pandas as pd
 # import numpy as np
 #
@@ -673,47 +676,8 @@ import statsmodels.tsa.stattools as ts
 #########################33
 ## MSPE mean squared prediction error
 
-# # ####
+# # # ####
 # # # AR模型
-import pandas as pd
-import numpy as np
-from statsmodels.tsa.arima_model import ARIMA
-from statsmodels.tsa.ar_model import AR
-import math
-import matplotlib.pyplot as plt
-
-oil_price_path = 'D:/python_code/NEW_step/try_paper/revision_data/result/train.xlsx'
-out_put = 'D:/python_code/NEW_step/try_paper/revision_data/result/predict.csv'
-data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
-price = data["Price6"]
-
-predict = []
-test = []
-for t in range(0,len(price)-2016):
-    try:
-        train = price[t:2016+t]
-        test_y = price[2016+t]
-        model = AR(train)
-        model_fit = model.fit()
-        y_kr = list(model_fit.predict(start=len(train),end=len(train),dynamic=False))
-        print('Lag: %s' % model_fit.k_ar)
-        print(y_kr)
-        print(price[2016+t])
-        predict.append(y_kr)
-        test.append(price[2016+t])
-    except Exception as e:
-        print(e)
-fn = open(out_put,'w')
-
-for i in range(0,len(test)):
-    fn.write(str(predict[i][0]))
-    fn.write(',')
-    fn.write(str(test[i]))
-    fn.write('\n')
-fn.close()
-
-print('ok')
-##################
 # import pandas as pd
 # import numpy as np
 # from statsmodels.tsa.arima_model import ARIMA
@@ -724,21 +688,22 @@ print('ok')
 # oil_price_path = 'D:/python_code/NEW_step/try_paper/revision_data/result/train.xlsx'
 # out_put = 'D:/python_code/NEW_step/try_paper/revision_data/result/predict.csv'
 # data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
-# price = data["Price2"]
+# price = data["Price1"]
 #
 # predict = []
 # test = []
-# for t in range(0,len(price)-2041):
+# for t in range(0,len(price)-1786):
 #     try:
-#         train = price[t:2041+t]
-#         test_y = price[2041+t]
-#         model = ARIMA(train, order=(1,2,1))
-#         model_fit = model.fit(disp=0)
-#         y_kr = model_fit.forecast()[0]  ##ARIMA
+#         train = price[t:1786+t]
+#         test_y = price[1786+t]
+#         model = AR(train)
+#         model_fit = model.fit()
+#         y_kr = list(model_fit.predict(start=len(train),end=len(train),dynamic=False))
+#         print('Lag: %s' % model_fit.k_ar)
 #         print(y_kr)
-#         print(price[2041+t])
+#         print(price[1786+t])
 #         predict.append(y_kr)
-#         test.append(price[2041+t])
+#         test.append(price[1786+t])
 #     except Exception as e:
 #         print(e)
 # fn = open(out_put,'w')
@@ -751,3 +716,67 @@ print('ok')
 # fn.close()
 #
 # print('ok')
+##################
+# import pandas as pd
+# import numpy as np
+# from statsmodels.tsa.arima_model import ARIMA
+# from statsmodels.tsa.ar_model import AR
+# import math
+# import matplotlib.pyplot as plt
+#
+# oil_price_path = 'D:/python_code/NEW_step/try_paper/revision_data/result/train.xlsx'
+# out_put = 'D:/python_code/NEW_step/try_paper/revision_data/result/predict.csv'
+# data=pd.read_excel(oil_price_path,sheet_name='Sheet1')
+# price = data["Price1"]
+#
+# predict = []
+# test = []
+# for t in range(0,len(price)-1786):
+#     try:
+#         train = price[t:1786+t]
+#         test_y = price[1786+t]
+#         model = ARIMA(train, order=(2,1,0))
+#         model_fit = model.fit(disp=0)
+#         y_kr = model_fit.forecast()[0]  ##ARIMA
+#         print(y_kr)
+#         print(price[1786+t])
+#         predict.append(y_kr)
+#         test.append(price[1786+t])
+#     except Exception as e:
+#         print(e)
+# fn = open(out_put,'w')
+#
+# for i in range(0,len(test)):
+#     fn.write(str(predict[i][0]))
+#     fn.write(',')
+#     fn.write(str(test[i]))
+#     fn.write('\n')
+# fn.close()
+#
+# print('ok')
+
+############DM test
+from stat_test import dm_test
+import pandas as pd
+import math
+
+INPUT = 'D:/python_code/NEW_step/try_paper/revision_data/result/predictprocess.xlsx'
+data = pd.read_excel(INPUT,sheet_name='Sheet4')
+
+actual_lst = data["Price"]
+pred1_lst = data["NAIVE"]
+
+pred2_lst = data["TV-TD"]
+pred2_2nd = data["ARIMA110"]
+pred2_3rd = data["ARIMA121"]
+pred2_4th = data["ARIMA210"]
+pred2_5th = data["AR26"]
+
+h = math.ceil(pow(len(data),1/3))+1
+
+e1 = actual_lst-pred1_lst
+e2 = actual_lst-pred2_5th
+
+print(dm_test(e1, e2, h=h, power=1, alternative='two_sided'))
+print(h)
+print(dm_test(e1, e2, h=h, power=2, alternative='two_sided'))
